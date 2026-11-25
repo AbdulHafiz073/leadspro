@@ -1,0 +1,6 @@
+{
+  "name": "LeadHunter Pro",
+  "description": "Enterprise Lead Generation & Multi-Channel Outreach Platform with country-wise filtering, lead scoring, and automated outreach.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

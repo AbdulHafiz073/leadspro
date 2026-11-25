@@ -1,0 +1,236 @@
+{
+  "info": {
+    "name": "LeadHunter Pro API Collection",
+    "description": "Complete collection for LeadHunter Pro C# .NET 8 Web API with MySQL 8.0, Hangfire & Multi-channel Outreach.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "jwtToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Admin User\",\n  \"email\": \"admin@leadhunterpro.com\",\n  \"password\": \"AdminSecret123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@leadhunterpro.com\",\n  \"password\": \"AdminSecret123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Current User Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwtToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Countries",
+      "item": [
+        {
+          "name": "Get All Active Countries",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/countries", "host": ["{{baseUrl}}"], "path": ["api", "countries"] }
+          }
+        },
+        {
+          "name": "Get Country By ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/countries/1", "host": ["{{baseUrl}}"], "path": ["api", "countries", "1"] }
+          }
+        },
+        {
+          "name": "Create Country (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Japan\",\n  \"code\": \"JP\",\n  \"isActive\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/countries", "host": ["{{baseUrl}}"], "path": ["api", "countries"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leads",
+      "item": [
+        {
+          "name": "Get Filtered Leads",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/leads?countryId=1&category=restaurant&hasWebsite=false&page=1&pageSize=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads"],
+              "query": [
+                { "key": "countryId", "value": "1" },
+                { "key": "category", "value": "restaurant" },
+                { "key": "hasWebsite", "value": "false" },
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Lead By ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/leads/101", "host": ["{{baseUrl}}"], "path": ["api", "leads", "101"] }
+          }
+        },
+        {
+          "name": "Manual Add Lead",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"businessName\": \"Apex Dental Care\",\n  \"contactPerson\": \"Dr. Sharma\",\n  \"email\": \"info@apexdental.in\",\n  \"phoneNumber\": \"+91 98201 44521\",\n  \"city\": \"Mumbai\",\n  \"countryId\": 1,\n  \"category\": \"Dentist\",\n  \"hasWebsite\": false,\n  \"websiteStatus\": \"NoWebsite\",\n  \"rating\": 4.8,\n  \"reviewCount\": 85\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/leads", "host": ["{{baseUrl}}"], "path": ["api", "leads"] }
+          }
+        },
+        {
+          "name": "Select Leads (Bulk)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "[101, 102, 103]" },
+            "url": { "raw": "{{baseUrl}}/api/leads/select", "host": ["{{baseUrl}}"], "path": ["api", "leads", "select"] }
+          }
+        },
+        {
+          "name": "Unselect All Leads",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/leads/unselect-all", "host": ["{{baseUrl}}"], "path": ["api", "leads", "unselect-all"] }
+          }
+        },
+        {
+          "name": "Export Leads CSV",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/leads/export?format=csv", "host": ["{{baseUrl}}"], "path": ["api", "leads", "export"], "query": [{ "key": "format", "value": "csv" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Daily Fetch (Hangfire)",
+      "item": [
+        {
+          "name": "Trigger Fetch Run Now",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/fetch/run-now", "host": ["{{baseUrl}}"], "path": ["api", "fetch", "run-now"] }
+          }
+        },
+        {
+          "name": "Get Fetch Logs",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/fetch/logs", "host": ["{{baseUrl}}"], "path": ["api", "fetch", "logs"] }
+          }
+        },
+        {
+          "name": "Get Fetch Scheduler Status",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/fetch/status", "host": ["{{baseUrl}}"], "path": ["api", "fetch", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Outreach",
+      "item": [
+        {
+          "name": "Send Multi-Channel Outreach",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leadIds\": [101, 201],\n  \"channel\": 0,\n  \"templateId\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/outreach/send", "host": ["{{baseUrl}}"], "path": ["api", "outreach", "send"] }
+          }
+        },
+        {
+          "name": "Get Outreach Logs",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/outreach/logs", "host": ["{{baseUrl}}"], "path": ["api", "outreach", "logs"] }
+          }
+        },
+        {
+          "name": "Get Templates",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/outreach/templates", "host": ["{{baseUrl}}"], "path": ["api", "outreach", "templates"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Summary Stats",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/dashboard/stats", "host": ["{{baseUrl}}"], "path": ["api", "dashboard", "stats"] }
+          }
+        },
+        {
+          "name": "Get 30-Day Daily Chart",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/dashboard/daily-chart?days=30", "host": ["{{baseUrl}}"], "path": ["api", "dashboard", "daily-chart"], "query": [{ "key": "days", "value": "30" }] }
+          }
+        }
+      ]
+    }
+  ]
+}

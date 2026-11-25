@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # MySQL 8.0 Database
+  mysql-db:
+    image: mysql:8.0
+    container_name: leadhunter-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: leadhunterpro
+      MYSQL_USER: leadhunter_user
+      MYSQL_PASSWORD: leadhunter_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - leadhunter-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # C# .NET 8 Web API & Hangfire Server
+  backend-api:
+    build:
+      context: ./backend
+      dockerfile: LeadHunter.API/Dockerfile
+    container_name: leadhunter-api
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=mysql-db;Port=3306;Database=leadhunterpro;User=root;Password=root_password;CharSet=utf8mb4;
+      - Jwt__Key=LeadHunterPro_SuperSecretEnterpriseKey_2026
+      - ApiKeys__GooglePlacesApiKey=${GOOGLE_PLACES_API_KEY}
+      - ApiKeys__SerpApiKey=${SERP_API_KEY}
+      - ApiKeys__HunterIoApiKey=${HUNTER_IO_API_KEY}
+      - ApiKeys__TwilioAccountSid=${TWILIO_ACCOUNT_SID}
+      - ApiKeys__TwilioAuthToken=${TWILIO_AUTH_TOKEN}
+      - ApiKeys__SendGridApiKey=${SENDGRID_API_KEY}
+    ports:
+      - "5000:80"
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - leadhunter-network
+
+  # React 18 / Vite Frontend
+  frontend-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: leadhunter-ui
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend-api
+    networks:
+      - leadhunter-network
+
+volumes:
+  mysql_data:
+
+networks:
+  leadhunter-network:
+    driver: bridge
